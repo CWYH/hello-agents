@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 AGENT_SYSTEM_PROMPT = """
 你是一个智能旅行助手。你的任务是分析用户的请求，并使用可用工具一步步地解决问题。
 
@@ -57,8 +59,13 @@ from tavily import TavilyClient
 
 def get_attraction(city: str, weather: str) -> str:
     """
-    根据城市和天气，使用Tavily Search API搜索并返回优化后的景点推荐。
+    Based on the city and weather, use Tavily Search API to search and return optimized attraction recommendations.
+    
+    Note: If TAVILY_API_KEY is not set, this function will return a message indicating the API key is missing.
     """
+    # Check if TAVILY_API_KEY is available
+    if not os.getenv("TAVILY_API_KEY"):
+        return "Error: TAVILY_API_KEY is not set. Please set it in your .env file or environment variables."
 
     # 从环境变量或主程序配置中获取API密钥
     api_key = os.environ.get("TAVILY_API_KEY") # 推荐方式
@@ -135,16 +142,19 @@ class OpenAICompatibleClient:
 import re
 
 # --- 1. 配置LLM客户端 ---
-# 请根据您使用的服务，将这里替换成对应的凭证和地址
-API_KEY = "YOUR_API_KEY"
-BASE_URL = "YOUR_BASE_URL"
-MODEL_ID = "YOUR_MODEL_ID"
-os.environ['TAVILY_API_KEY'] = "YOUR_TAVILY_API_KEY"
+# 加载环境变量
+load_dotenv()
+
+# 配置API密钥
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+BASE_URL = os.getenv("BASE_URL")
+MODEL_ID = os.getenv("MODEL_ID")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 llm = OpenAICompatibleClient(
     model=MODEL_ID,
-    api_key=API_KEY,
-    base_url=BASE_URL
+    api_key=OPENAI_API_KEY,
+    base_url=BASE_URL  
 )
 
 # --- 2. 初始化 ---
