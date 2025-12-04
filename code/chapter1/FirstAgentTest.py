@@ -8,12 +8,12 @@ AGENT_SYSTEM_PROMPT = """
 - `get_attraction(city: str, weather: str)`: 根据城市和天气搜索推荐的旅游景点。
 
 # 行动格式:
-你的回答必须严格遵循以下格式。首先是你的思考过程，然后是你要执行的具体行动。
+你的回答必须严格遵循以下格式。首先是你的思考过程，然后是你要执行的具体行动，每次回复只输出一对Thought-Action：
 Thought: [这里是你的思考过程和下一步计划]
 Action: [这里是你要调用的工具，格式为 function_name(arg_name="arg_value")]
 
 # 任务完成:
-当你收集到足够的信息，能够回答用户的最终问题时，你必须使用 `finish(answer="...")` 来输出最终答案。
+当你收集到足够的信息，能够回答用户的最终问题时，你必须在`Action:`字段后使用 `finish(answer="...")` 来输出最终答案。
 
 请开始吧！
 """
@@ -172,6 +172,13 @@ for i in range(5): # 设置最大循环次数
     
     # 3.2. 调用LLM进行思考
     llm_output = llm.generate(full_prompt, system_prompt=AGENT_SYSTEM_PROMPT)
+    # 模型可能会输出多余的Thought-Action，需要截断
+    match = re.search(r'(Thought:.*?Action:.*?)(?=\n\s*(?:Thought:|Action:|Observation:)|\Z)', llm_output, re.DOTALL)
+    if match:
+        truncated = match.group(1).strip()
+        if truncated != llm_output.strip():
+            llm_output = truncated
+            print("已截断多余的 Thought-Action 对")
     print(f"模型输出:\n{llm_output}\n")
     prompt_history.append(llm_output)
     

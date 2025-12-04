@@ -137,7 +137,8 @@ print(response)
 # 添加工具功能（可选）
 from hello_agents.tools import CalculatorTool
 calculator = CalculatorTool()
-agent.add_tool(calculator)
+# 需要实现7.4.1的MySimpleAgent进行调用，后续章节会支持此类调用方式
+# agent.add_tool(calculator)
 
 # 现在可以使用工具了
 response = agent.run("请帮我计算 2 + 3 * 4")
@@ -241,7 +242,7 @@ MODELSCOPE_API_KEY="your-modelscope-api-key"
 ```python
 # my_main.py
 from dotenv import load_dotenv
-from my_llm import MyLLM # 注意：这里导入我们自己的类
+from my_llm import MyLLM # 注意:这里导入我们自己的类
 
 # 加载环境变量
 load_dotenv()
@@ -457,9 +458,9 @@ for chunk in llm.think(messages):
 
 在上节中，我们构建了 `HelloAgentsLLM` 这一核心组件，解决了与大语言模型通信的关键问题。不过它还需要一系列配套的接口和组件来处理数据流、管理配置、应对异常，并为上层应用的构建提供一个清晰、统一的结构。本节将讲述以下三个核心文件：
 
-- **`message.py`**: 定义了框架内统一的消息格式，确保了智能体与模型之间信息传递的标准化。
-- **`config.py`**: 提供了一个中心化的配置管理方案，使框架的行为易于调整和扩展。
-- **`agent.py`**: 定义了所有智能体的抽象基类（`Agent`），为后续实现不同类型的智能体提供了统一的接口和规范。
+- `message.py`： 定义了框架内统一的消息格式，确保了智能体与模型之间信息传递的标准化。
+- `config.py`： 提供了一个中心化的配置管理方案，使框架的行为易于调整和扩展。
+- `agent.py`： 定义了所有智能体的抽象基类（`Agent`），为后续实现不同类型的智能体提供了统一的接口和规范。
 
 ### 7.3.1 Message 类
 
@@ -690,13 +691,13 @@ class MySimpleAgent(SimpleAgent):
             return base_prompt
 
         tools_section = "\n\n## 可用工具\n"
-        tools_section += "你可以使用以下工具来帮助回答问题：\n"
+        tools_section += "你可以使用以下工具来帮助回答问题:\n"
         tools_section += tools_description + "\n"
 
         tools_section += "\n## 工具调用格式\n"
-        tools_section += "当需要使用工具时，请使用以下格式：\n"
+        tools_section += "当需要使用工具时，请使用以下格式:\n"
         tools_section += "`[TOOL_CALL:{tool_name}:{parameters}]`\n"
-        tools_section += "例如：`[TOOL_CALL:search:Python编程]` 或 `[TOOL_CALL:memory:recall=用户信息]`\n\n"
+        tools_section += "例如:`[TOOL_CALL:search:Python编程]` 或 `[TOOL_CALL:memory:recall=用户信息]`\n\n"
         tools_section += "工具调用结果会自动插入到对话中，然后你可以基于结果继续回答。\n"
 
         return base_prompt + tools_section
@@ -738,7 +739,7 @@ class MySimpleAgent(SimpleAgent):
 
                 # 添加工具结果
                 tool_results_text = "\n\n".join(tool_results)
-                messages.append({"role": "user", "content": f"工具执行结果：\n{tool_results_text}\n\n请基于这些结果给出完整的回答。"})
+                messages.append({"role": "user", "content": f"工具执行结果:\n{tool_results_text}\n\n请基于这些结果给出完整的回答。"})
 
                 current_iteration += 1
                 continue
@@ -776,7 +777,7 @@ class MySimpleAgent(SimpleAgent):
     def _execute_tool_call(self, tool_name: str, parameters: str) -> str:
         """执行工具调用"""
         if not self.tool_registry:
-            return f"❌ 错误：未配置工具注册表"
+            return f"❌ 错误:未配置工具注册表"
 
         try:
             # 智能参数解析
@@ -788,13 +789,13 @@ class MySimpleAgent(SimpleAgent):
                 param_dict = self._parse_tool_parameters(tool_name, parameters)
                 tool = self.tool_registry.get_tool(tool_name)
                 if not tool:
-                    return f"❌ 错误：未找到工具 '{tool_name}'"
+                    return f"❌ 错误:未找到工具 '{tool_name}'"
                 result = tool.run(param_dict)
 
-            return f"🔧 工具 {tool_name} 执行结果：\n{result}"
+            return f"🔧 工具 {tool_name} 执行结果:\n{result}"
 
         except Exception as e:
-            return f"❌ 工具调用失败：{str(e)}"
+            return f"❌ 工具调用失败:{str(e)}"
 
     def _parse_tool_parameters(self, tool_name: str, parameters: str) -> dict:
         """智能解析工具参数"""
@@ -803,14 +804,14 @@ class MySimpleAgent(SimpleAgent):
         if '=' in parameters:
             # 格式: key=value 或 action=search,query=Python
             if ',' in parameters:
-                # 多个参数：action=search,query=Python,limit=3
+                # 多个参数:action=search,query=Python,limit=3
                 pairs = parameters.split(',')
                 for pair in pairs:
                     if '=' in pair:
                         key, value = pair.split('=', 1)
                         param_dict[key.strip()] = value.strip()
             else:
-                # 单个参数：key=value
+                # 单个参数:key=value
                 key, value = parameters.split('=', 1)
                 param_dict[key.strip()] = value.strip()
         else:
@@ -906,8 +907,8 @@ load_dotenv()
 # 创建LLM实例
 llm = HelloAgentsLLM()
 
-# 测试1：基础对话Agent（无工具）
-print("=== 测试1：基础对话 ===")
+# 测试1:基础对话Agent（无工具）
+print("=== 测试1:基础对话 ===")
 basic_agent = MySimpleAgent(
     name="基础助手",
     llm=llm,
@@ -917,8 +918,8 @@ basic_agent = MySimpleAgent(
 response1 = basic_agent.run("你好，请介绍一下自己")
 print(f"基础对话响应: {response1}\n")
 
-# 测试2：带工具的Agent
-print("=== 测试2：工具增强对话 ===")
+# 测试2:带工具的Agent
+print("=== 测试2:工具增强对话 ===")
 tool_registry = ToolRegistry()
 calculator = CalculatorTool()
 tool_registry.register_tool(calculator)
@@ -934,14 +935,14 @@ enhanced_agent = MySimpleAgent(
 response2 = enhanced_agent.run("请帮我计算 15 * 8 + 32")
 print(f"工具增强响应: {response2}\n")
 
-# 测试3：流式响应
-print("=== 测试3：流式响应 ===")
+# 测试3:流式响应
+print("=== 测试3:流式响应 ===")
 print("流式响应: ", end="")
 for chunk in basic_agent.stream_run("请解释什么是人工智能"):
     pass  # 内容已在stream_run中实时打印
 
-# 测试4：动态添加工具
-print("\n=== 测试4：动态工具管理 ===")
+# 测试4:动态添加工具
+print("\n=== 测试4:动态工具管理 ===")
 print(f"添加工具前: {basic_agent.has_tools()}")
 basic_agent.add_tool(calculator)
 print(f"添加工具后: {basic_agent.has_tools()}")
@@ -968,16 +969,16 @@ MY_REACT_PROMPT = """你是一个具备推理和行动能力的AI助手。你可
 {tools}
 
 ## 工作流程
-请严格按照以下格式进行回应，每次只能执行一个步骤：
+请严格按照以下格式进行回应，每次只能执行一个步骤:
 
 Thought: 分析当前问题，思考需要什么信息或采取什么行动。
-Action: 选择一个行动，格式必须是以下之一：
+Action: 选择一个行动，格式必须是以下之一:
 - `{{tool_name}}[{{tool_input}}]` - 调用指定工具
 - `Finish[最终答案]` - 当你有足够信息给出最终答案时
 
 ## 重要提醒
 1. 每次回应必须包含Thought和Action两部分
-2. 工具调用的格式必须严格遵循：工具名[参数]
+2. 工具调用的格式必须严格遵循:工具名[参数]
 3. 只有当你确信有足够信息回答问题时，才使用Finish
 4. 如果工具返回的信息不够，继续使用其他工具或相同工具的不同参数
 
@@ -987,7 +988,7 @@ Action: 选择一个行动，格式必须是以下之一：
 ## 执行历史
 {history}
 
-现在开始你的推理和行动：
+现在开始你的推理和行动:
 """
 ```
 
@@ -1026,13 +1027,13 @@ class MyReActAgent(ReActAgent):
 
 其初始化参数的含义如下：
 
-- `name`: Agent的名称。
-- `llm`: `HelloAgentsLLM`的实例，负责与大语言模型通信。
-- `tool_registry`: `ToolRegistry`的实例，用于管理和执行Agent可用的工具。
-- `system_prompt`: 系统提示词，用于设定Agent的角色和行为准则。
-- `config`: 配置对象，用于传递框架级的设置。
-- `max_steps`: ReAct循环的最大执行步数，防止无限循环。
-- `custom_prompt`: 自定义的提示词模板，用于替换默认的ReAct提示词。
+- `name`： Agent的名称。
+- `llm`： `HelloAgentsLLM`的实例，负责与大语言模型通信。
+- `tool_registry`： `ToolRegistry`的实例，用于管理和执行Agent可用的工具。
+- `system_prompt`： 系统提示词，用于设定Agent的角色和行为准则。
+- `config`： 配置对象，用于传递框架级的设置。
+- `max_steps`： ReAct循环的最大执行步数，防止无限循环。
+- `custom_prompt`： 自定义的提示词模板，用于替换默认的ReAct提示词。
 
 框架化的ReActAgent将执行流程分解为清晰的步骤：
 
@@ -1067,7 +1068,8 @@ def run(self, input_text: str, **kwargs) -> str:
         # 4. 检查完成条件
         if action and action.startswith("Finish"):
             final_answer = self._parse_action_input(action)
-            self._save_to_history(input_text, final_answer)
+            self.add_message(Message(input_text, "user"))
+            self.add_message(Message(final_answer, "assistant"))
             return final_answer
 
         # 5. 执行工具调用
@@ -1079,7 +1081,8 @@ def run(self, input_text: str, **kwargs) -> str:
 
     # 达到最大步数
     final_answer = "抱歉，我无法在限定步数内完成这个任务。"
-    self._save_to_history(input_text, final_answer)
+    self.add_message(Message(input_text, "user"))
+    self.add_message(Message(final_answer, "assistant"))
     return final_answer
 ```
 
@@ -1092,14 +1095,14 @@ def run(self, input_text: str, **kwargs) -> str:
 ```python
 DEFAULT_PROMPTS = {
     "initial": """
-请根据以下要求完成任务：
+请根据以下要求完成任务:
 
 任务: {task}
 
 请提供一个完整、准确的回答。
 """,
     "reflect": """
-请仔细审查以下回答，并找出可能的问题或改进空间：
+请仔细审查以下回答，并找出可能的问题或改进空间:
 
 # 原始任务:
 {task}
@@ -1111,7 +1114,7 @@ DEFAULT_PROMPTS = {
 如果回答已经很好，请回答"无需改进"。
 """,
     "refine": """
-请根据反馈意见改进你的回答：
+请根据反馈意见改进你的回答:
 
 # 原始任务:
 {task}
@@ -1143,9 +1146,9 @@ general_agent = MyReflectionAgent(name="我的反思助手", llm=llm)
 
 # 使用自定义代码生成提示词（类似第四章）
 code_prompts = {
-    "initial": "你是Python专家，请编写函数：{task}",
-    "reflect": "请审查代码的算法效率：\n任务：{task}\n代码：{content}",
-    "refine": "请根据反馈优化代码：\n任务：{task}\n反馈：{feedback}"
+    "initial": "你是Python专家，请编写函数:{task}",
+    "reflect": "请审查代码的算法效率:\n任务:{task}\n代码:{content}",
+    "refine": "请根据反馈优化代码:\n任务:{task}\n反馈:{feedback}"
 }
 code_agent = MyReflectionAgent(
     name="我的代码生成助手",
@@ -1235,7 +1238,7 @@ print(f"对话历史: {len(agent.get_history())} 条消息")
 # 创建专门用于数学问题的自定义提示词
 math_prompts = {
     "planner": """
-你是数学问题规划专家。请将数学问题分解为计算步骤：
+你是数学问题规划专家。请将数学问题分解为计算步骤:
 
 问题: {question}
 
@@ -1245,7 +1248,7 @@ python
 
 """,
     "executor": """
-你是数学计算专家。请计算当前步骤：
+你是数学计算专家。请计算当前步骤:
 
 问题: {question}
 计划: {plan}
@@ -1274,6 +1277,72 @@ print(f"数学专用Agent结果: {math_result}")
   <p>表 7.2 Agent不同章节实现对比</p>
   <img src="https://raw.githubusercontent.com/datawhalechina/Hello-Agents/main/docs/images/7-figures/table-02.png" alt="" width="90%"/>
 </div>
+
+### 7.4.5 FunctionCallAgent
+
+FunctionCallAgent是hello-agents在0.2.8之后引入的Agent，它基于OpenAI原生函数调用机制的Agent，展示了如何使用OpenAI的函数调用机制来构建Agent。
+它支持以下功能：
+_build_tool_schemas:通过工具的description构建OpenAI的function calling schema
+_extract_message_content:从OpenAI的响应中提取文本
+_parse_function_call_arguments:解析模型返回的JSON字符串参数
+_convert_parameter_types:转换参数类型
+
+这些功能可以使其具备原生的OpenAI Functioncall的能力，对比使用prompt约束的方式，具备更强的鲁棒性。
+```python
+def _invoke_with_tools(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]], tool_choice: Union[str, dict], **kwargs):
+        """调用底层OpenAI客户端执行函数调用"""
+        client = getattr(self.llm, "_client", None)
+        if client is None:
+            raise RuntimeError("HelloAgentsLLM 未正确初始化客户端，无法执行函数调用。")
+
+        client_kwargs = dict(kwargs)
+        client_kwargs.setdefault("temperature", self.llm.temperature)
+        if self.llm.max_tokens is not None:
+            client_kwargs.setdefault("max_tokens", self.llm.max_tokens)
+
+        return client.chat.completions.create(
+            model=self.llm.model,
+            messages=messages,
+            tools=tools,
+            tool_choice=tool_choice,
+            **client_kwargs,
+        )
+
+#内部逻辑是对Openai 原生的functioncall作再封装
+#OpenAI 原生functioncall示例
+from openai import OpenAI
+client = OpenAI()
+
+tools = [
+  {
+    "type": "function",
+    "function": {
+      "name": "get_current_weather",
+      "description": "Get the current weather in a given location",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "The city and state, e.g. San Francisco, CA",
+          },
+          "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+        },
+        "required": ["location"],
+      },
+    }
+  }
+]
+messages = [{"role": "user", "content": "What's the weather like in Boston today?"}]
+completion = client.chat.completions.create(
+  model="gpt-5",
+  messages=messages,
+  tools=tools,
+  tool_choice="auto"
+)
+
+print(completion)
+```
 
 ## 7.5 工具系统
 
@@ -1343,7 +1412,7 @@ class ToolRegistry:
     def register_tool(self, tool: Tool):
         """注册Tool对象"""
         if tool.name in self._tools:
-            print(f"⚠️ 警告：工具 '{tool.name}' 已存在，将被覆盖。")
+            print(f"⚠️ 警告:工具 '{tool.name}' 已存在，将被覆盖。")
         self._tools[tool.name] = tool
         print(f"✅ 工具 '{tool.name}' 已注册。")
         
@@ -1357,7 +1426,7 @@ class ToolRegistry:
             func: 工具函数，接受字符串参数，返回字符串结果
         """
         if name in self._functions:
-            print(f"⚠️ 警告：工具 '{name}' 已存在，将被覆盖。")
+            print(f"⚠️ 警告:工具 '{name}' 已存在，将被覆盖。")
 
         self._functions[name] = {
             "description": description,
@@ -1390,6 +1459,57 @@ def get_tools_description(self) -> str:
     return "\n".join(descriptions) if descriptions else "暂无可用工具"
 ````
 这个方法生成的描述字符串可以直接用于构建Agent的提示词，让Agent了解可用的工具。
+
+````python
+def to_openai_schema(self) -> Dict[str, Any]:
+        """转换为 OpenAI function calling schema 格式
+
+        用于 FunctionCallAgent，使工具能够被 OpenAI 原生 function calling 使用
+
+        Returns:
+            符合 OpenAI function calling 标准的 schema
+        """
+        parameters = self.get_parameters()
+
+        # 构建 properties
+        properties = {}
+        required = []
+
+        for param in parameters:
+            # 基础属性定义
+            prop = {
+                "type": param.type,
+                "description": param.description
+            }
+
+            # 如果有默认值，添加到描述中（OpenAI schema 不支持 default 字段）
+            if param.default is not None:
+                prop["description"] = f"{param.description} (默认: {param.default})"
+
+            # 如果是数组类型，添加 items 定义
+            if param.type == "array":
+                prop["items"] = {"type": "string"}  # 默认字符串数组
+
+            properties[param.name] = prop
+
+            # 收集必需参数
+            if param.required:
+                required.append(param.name)
+
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required
+                }
+            }
+        }
+````
+这个方法生成的schema可以直接用于原生的OpenAI SDK的工具调用。
 
 ### 7.5.2 自定义工具开发
 
@@ -1517,7 +1637,7 @@ def test_with_simple_agent():
 
     # 构建最终回答
     final_messages = [
-        {"role": "user", "content": f"计算结果是 {calc_result}，请用自然语言回答用户的问题：{user_question}"}
+        {"role": "user", "content": f"计算结果是 {calc_result}，请用自然语言回答用户的问题:{user_question}"}
     ]
 
     print("\n🎯 SimpleAgent的回答:")
@@ -1555,7 +1675,7 @@ class SearchTool(Tool):
     """
     智能混合搜索工具
 
-    支持多种搜索引擎后端，智能选择最佳搜索源：
+    支持多种搜索引擎后端，智能选择最佳搜索源:
     1. 混合模式 (hybrid) - 智能选择TAVILY或SERPAPI
     2. Tavily API (tavily) - 专业AI搜索
     3. SerpApi (serpapi) - 传统Google搜索
@@ -1618,7 +1738,7 @@ def _search_tavily(self, query: str) -> str:
         max_results=3
     )
 
-    result = f"🎯 Tavily AI搜索结果：{response.get('answer', '未找到直接答案')}\n\n"
+    result = f"🎯 Tavily AI搜索结果:{response.get('answer', '未找到直接答案')}\n\n"
 
     for i, item in enumerate(response.get('results', [])[:3], 1):
         result += f"[{i}] {item.get('title', '')}\n"
@@ -1677,11 +1797,11 @@ class MyAdvancedSearchTool:
     def search(self, query: str) -> str:
         """执行智能搜索"""
         if not query.strip():
-            return "❌ 错误：搜索查询不能为空"
+            return "❌ 错误:搜索查询不能为空"
 
         # 检查是否有可用的搜索源
         if not self.search_sources:
-            return """❌ 没有可用的搜索源，请配置以下API密钥之一：
+            return """❌ 没有可用的搜索源，请配置以下API密钥之一:
 
 1. Tavily API: 设置环境变量 TAVILY_API_KEY
    获取地址: https://tavily.com/
@@ -1699,12 +1819,12 @@ class MyAdvancedSearchTool:
                 if source == "tavily":
                     result = self._search_with_tavily(query)
                     if result and "未找到" not in result:
-                        return f"📊 Tavily AI搜索结果：\n\n{result}"
+                        return f"📊 Tavily AI搜索结果:\n\n{result}"
 
                 elif source == "serpapi":
                     result = self._search_with_serpapi(query)
                     if result and "未找到" not in result:
-                        return f"🌐 SerpApi Google搜索结果：\n\n{result}"
+                        return f"🌐 SerpApi Google搜索结果:\n\n{result}"
 
             except Exception as e:
                 print(f"⚠️ {source} 搜索失败: {e}")
@@ -1717,11 +1837,11 @@ class MyAdvancedSearchTool:
         response = self.tavily_client.search(query=query, max_results=3)
 
         if response.get('answer'):
-            result = f"💡 AI直接答案：{response['answer']}\n\n"
+            result = f"💡 AI直接答案:{response['answer']}\n\n"
         else:
             result = ""
 
-        result += "🔗 相关结果：\n"
+        result += "🔗 相关结果:\n"
         for i, item in enumerate(response.get('results', [])[:3], 1):
             result += f"[{i}] {item.get('title', '')}\n"
             result += f"    {item.get('content', '')[:150]}...\n\n"
@@ -1740,7 +1860,7 @@ class MyAdvancedSearchTool:
 
         results = search.get_dict()
 
-        result = "🔗 Google搜索结果：\n"
+        result = "🔗 Google搜索结果:\n"
         if "organic_results" in results:
             for i, res in enumerate(results["organic_results"][:3], 1):
                 result += f"[{i}] {res.get('title', '')}\n"
@@ -1877,7 +1997,7 @@ class ToolChain:
             try:
                 tool_input = input_template.format(**context)
             except KeyError as e:
-                return f"❌ 工具链执行失败：模板变量 {e} 未找到"
+                return f"❌ 工具链执行失败:模板变量 {e} 未找到"
 
             print(f"  步骤 {i}: 使用 {tool_name} 处理 '{tool_input[:50]}...'")
 
@@ -1918,23 +2038,23 @@ class ToolChainManager:
 
 # 使用示例
 def create_research_chain() -> ToolChain:
-    """创建一个研究工具链：搜索 -> 计算 -> 总结"""
+    """创建一个研究工具链:搜索 -> 计算 -> 总结"""
     chain = ToolChain(
         name="research_and_calculate",
         description="搜索信息并进行相关计算"
     )
 
-    # 步骤1：搜索信息
+    # 步骤1:搜索信息
     chain.add_step(
         tool_name="search",
         input_template="{input}",
         output_key="search_result"
     )
 
-    # 步骤2：基于搜索结果进行计算（如果需要）
+    # 步骤2:基于搜索结果进行计算（如果需要）
     chain.add_step(
         tool_name="my_calculator",
-        input_template="根据以下信息计算相关数值：{search_result}",
+        input_template="根据以下信息计算相关数值:{search_result}",
         output_key="calculation_result"
     )
 
@@ -2032,3 +2152,46 @@ async def test_parallel_execution():
 更重要的是，第七章的构建并非终点，而是为后续更深入学习提供了必要的技术基础。我们在设计之初便充分考虑了后续内容的延展性，为高级功能的实现预留了必要的接口和扩展点。我们所建立的统一LLM接口、标准化消息系统、工具注册机制，共同构成了一个完备的技术底座。这使得我们在后续章节中，可以更加从容地去学习更高级的主题：第八章的记忆与RAG系统将基于此扩展Agent的能力边界；第九章的上下文工程将深入我们已经建立的消息处理机制；第十章的智能体协议则需要扩展新的工具。
 
 接下来，我们将一起探索如何往框架中加入RAG系统与Memory机制，敬请期待第八章！
+
+
+## 习题
+
+1. 本章构建了 `HelloAgents` 框架，并阐述了"为何需要自建Agent框架"。请分析：
+
+   - 在7.1.1节中提到了当前主流框架的四个主要局限性。结合你在[第六章习题](../chapter6/第六章%20框架开发实践.md#习题)或实际项目中使用过的某个框架的实际经验，说明这些问题是如何影响开发效率的。
+   - `HelloAgents` 提出了"万物皆为工具"的设计理念，将 `Memory`、`RAG`、`MCP` 等模块都抽象为工具。这种设计有什么优势？是否存在局限性？请举例说明。
+   - 对比第四章从零实现的智能体代码和本章的框架化实现，框架化带来了哪些具体的改进？如果让你设计一个框架，你会优先考虑哪些设计原则？
+
+2. 在7.2节中，我们扩展了 `HelloAgentsLLM` 以支持多模型供应商和本地模型调用。
+
+   > <strong>提示</strong>：这是一道实践题，建议实际操作
+
+   - 参考7.2.1节的示例，尝试为 `HelloAgentsLLM` 添加一个新模型供应商的支持（如`Gemini`、`Anthropic`、`Kim`）。要求通过继承方式实现，并能够自动检测该提供商的环境变量。
+   - 在7.2.3节中介绍了自动检测机制的三个优先级。请分析：如果同时设置了 `OPENAI_API_KEY` 和 `LLM_BASE_URL="http://localhost:11434/v1"`，框架最后会选择哪个提供商？这种优先级设计是否合理？
+   - 除了本章介绍的 `VLLM` 和 `Ollama`，还有 `SGLang` 等其他本地模型部署方案。请先搜索并了解 `SGLang` 的基本信息和特点，然后对比 `VLLM`、`SGLang` 和 `Ollama` 这三者在易用性、资源占用、推理速度、推理精度等方面的优劣。
+
+3. 在7.3节中，我们实现了 `Message` 类、`Config` 类和 `Agent` 基类。请分析：
+
+   - `Message` 类使用了 `Pydantic` 的 `BaseModel` 进行数据验证。这种设计在实际应用中有哪些优势？
+   - `Agent` 基类定义了 `run` 和 `_execute` 两个方法，其中 `run` 是公开接口，`_execute` 是抽象方法。这种设计模式叫什么？有什么好处？
+   - 在 `Config` 类中，我们使用了单例模式。请解释什么是单例模式，为什么配置管理需要使用单例模式？如果不使用单例会导致什么问题？
+
+4. 在7.4节中，我们动手进行了四种 `Agent` 范式的框架化实现。
+
+   > <strong>提示</strong>：这是一道实践题，建议实际操作
+
+   - 对比第四章从零实现的 `ReActAgent` 和本章框架化的 `ReActAgent`，列举3个具体的改进点，并说明这些改进如何提升了代码的可维护性和可扩展性。
+   - `ReflectionAgent` 实现了"执行-反思-优化"循环。请扩展这个实现，添加一个"质量评分"机制：在每次反思后，让 `LLM` 对当前版本的输出打分，只有分数低于阈值时才继续优化，否则提前终止。
+   - 请设计并实现一个新的 `Agent` 范式 `Tree-of-Thought Agent`，要求继承 `Agent` 基类，它能够在每一步生成多个可能的思考路径，然后选择最优路径继续。
+
+5. 在7.5节中，我们构建了工具系统。请思考以下问题：
+
+   - `BaseTool` 类定义了 `execute` 抽象方法，所有工具都必须实现这个方法。请解释为什么要强制所有工具实现统一的接口？如果某个工具需要返回多个值（如搜索工具返回标题、摘要、链接），应该如何设计？
+   - 在7.5.3节中实现了工具链（`ToolChain`）。请设计一个实际的应用场景，需要串联至少3个工具，并画出工具链的执行流程图。
+   - 异步工具执行器（`AsyncToolExecutor`）使用了线程池来并行执行工具。请分析：在什么情况下并行执行工具能带来性能提升？
+
+6. 框架的可扩展性是设计的重要考量因素之一。你现在要扩展 `HelloAgents` 框架，为其实现一些有趣的新功能和特性。
+
+   - 首先为 `HelloAgents` 添加一个"流式输出"功能，使得 `Agent` 在生成响应时能够实时返回中间结果（类似 `ChatGPT` 用户界面的打字效果）。请设计这个功能的实现方案，说明需要修改哪些类和方法。
+   - 然后为框架添加"多轮对话管理"功能，能够自动管理对话历史、支持对话分支和回溯，你会如何设计？需要新增哪些类？如何与现有的 `Message` 系统集成？
+   - 最后请为 `HelloAgents` 设计一个"插件系统"，允许第三方开发者通过插件的方式扩展框架功能（如添加新的 `Agent` 类型、新的工具类型等），而无需修改框架核心代码。要求画出插件系统的架构图并说明关键接口。
