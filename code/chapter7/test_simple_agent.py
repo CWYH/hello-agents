@@ -1,7 +1,8 @@
 # test_simple_agent.py
 from dotenv import load_dotenv
 from hello_agents import HelloAgentsLLM, ToolRegistry
-from hello_agents.tools import CalculatorTool
+from hello_agents.tools import CalculatorTool  # Remove this
+from my_calculator_tool import create_calculator_registry  # Use local instead
 from my_simple_agent import MySimpleAgent
 
 # 加载环境变量
@@ -25,7 +26,7 @@ print(f"基础对话响应: {response1}\n")
 print("=== 测试2：工具增强对话 ===")
 tool_registry = ToolRegistry()
 calculator = CalculatorTool()
-tool_registry.register_tool(calculator)
+tool_registry = create_calculator_registry()  # Use local calculator
 
 enhanced_agent = MySimpleAgent(
     name="增强助手",
