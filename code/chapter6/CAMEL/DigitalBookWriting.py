@@ -1,6 +1,23 @@
 from colorama import Fore
 from camel.societies import RolePlaying
 from camel.utils import print_text_animated
+from camel.models import ModelFactory
+from camel.types import ModelPlatformType
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL")
+LLM_MODEL = os.getenv("LLM_MODEL")
+
+#创建模型,在这里以Qwen为例,调用的百炼大模型平台API
+model = ModelFactory.create(
+    model_platform=ModelPlatformType.QWEN,
+    model_type=LLM_MODEL,
+    url=LLM_BASE_URL,
+    api_key=LLM_API_KEY
+)
 
 # 定义协作任务
 task_prompt = """
@@ -19,7 +36,8 @@ print(Fore.YELLOW + f"协作任务:\n{task_prompt}\n")
 role_play_session = RolePlaying(
     assistant_role_name="心理学家", 
     user_role_name="作家", 
-    task_prompt=task_prompt
+    task_prompt=task_prompt,
+    model=model
 )
 
 print(Fore.CYAN + f"具体任务描述:\n{role_play_session.task_prompt}\n")
