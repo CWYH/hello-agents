@@ -37,7 +37,7 @@ $$P(w_i∣w_{i−1})=\frac{Count(w_{i−1},w_i)}{Count(w_{i−1})}$$
 
 Here, the `Count()` function represents "counting":
 
-- $Count(w_i−1,w_i)$: represents the total number of times the word pair $(w_{i−1},w_i)$ appears consecutively in the corpus.
+- $Count(w_{i−1},w_i)$: represents the total number of times the word pair $(w_{i−1},w_i)$ appears consecutively in the corpus.
 - $Count(w_{i−1})$: represents the total number of times the single word $w_{i−1}$ appears in the corpus.
 
 The formula's meaning is: we use "the number of times word pair $Count(w_i−1,w_i)$ appears" divided by "the total number of times word $Count(w_{i−1})$ appears" as an approximate estimate of $P(w_i∣w_{i−1})$.

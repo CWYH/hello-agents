@@ -1287,7 +1287,7 @@ _extract_message_content:从OpenAI的响应中提取文本
 _parse_function_call_arguments:解析模型返回的JSON字符串参数
 _convert_parameter_types:转换参数类型
 
-这些功能可以使其具备原生的OpenAI Functioncall的能力，对比使用prompt约束的方式，具备更强的鲁棒性。
+这些功能可以使其具备原生的OpenAI Function Calling的能力，对比使用prompt约束的方式，具备更强的鲁棒性。
 ```python
 def _invoke_with_tools(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]], tool_choice: Union[str, dict], **kwargs):
         """调用底层OpenAI客户端执行函数调用"""

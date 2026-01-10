@@ -1793,7 +1793,7 @@ for i in range(10):
         }
     )
 
-print(f"✅ Registered {len(discovery.list_services())} compute nodes")
+print(f"✅ Registered {len(discovery.list_all_services())} compute nodes")
 
 # 3. Create task scheduler Agent
 scheduler = SimpleAgent(

@@ -380,7 +380,7 @@ class OpenAICompatibleClient:
             return "Error: Error occurred when calling language model service."
 ```
 
-To instantiate this class, you need to provide three pieces of information: `API_KEY`, `BASE_URL`, and `MODEL_ID`. The specific values depend on the service provider you use (such as OpenAI official, Azure, or local models like Ollama). If you don't have access to these yet, you can refer to [1.2 API Setup](https://datawhalechina.github.io/handy-multi-agent/#/chapter1/1.2.api-setup) in another Datawhale tutorial.
+To instantiate this class, you need to provide three pieces of information: `API_KEY`, `BASE_URL`, and `MODEL_ID`. The specific values depend on the service provider you use (such as OpenAI official, Azure, or local models like Ollama). If you don't have access to these yet, you can refer to [1.2 API Setup](https://datawhalechina.github.io/handy-multi-agent/#/./chapter1/1-Basic-Configuration?id=_12-api-settings) in another Datawhale tutorial.
 
 ### 1.3.3 Executing the Action Loop
 
