@@ -129,8 +129,8 @@ However, this powerful intuitive capability also comes with opacity. Sub-symboli
 
 For a long time, the two camps of symbolism and sub-symbolism developed like two parallel lines. To overcome the limitations of the above two paradigms, a "grand reconciliation" idea began to emerge, which is neuro-symbolic AI, also called neuro-symbolic hybrid. Its goal is to merge the advantages of both paradigms, creating a hybrid agent that can both learn from data like neural networks and perform logical reasoning like symbolic systems. It attempts to bridge the gap between perception and cognition, intuition and rationality. Nobel Prize-winning economist Daniel Kahneman's dual-system theory proposed in his book "Thinking, Fast and Slow" provides an excellent analogy for understanding neuro-symbolism<sup>[2]</sup>, as shown in Figure 1.4:
 
-- **System 1** is a fast, intuitive, parallel thinking mode, similar to the powerful pattern recognition capability of sub-symbolic AI.
-- **System 2** is slow, methodical, logic-based deliberative thinking, just like the reasoning process of symbolic AI.
+- **System 1** is slow, methodical, logic-based deliberative thinking, just like the reasoning process of symbolic AI.
+- **System 2** is a fast, intuitive, parallel thinking mode, similar to the powerful pattern recognition capability of sub-symbolic AI.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/datawhalechina/Hello-Agents/main/docs/images/1-figures/1757242319667-4.png" alt="Figure description" width="90%"/>
@@ -240,10 +240,10 @@ You are an intelligent travel assistant. Your task is to analyze user requests a
 # Action Format:
 Your response must strictly follow the following format. First is your thinking process, then the specific action you want to execute. Each response should output only one Thought-Action pair:
 Thought: [Here is your thinking process and next step plan]
-Action: [Here is the tool you want to call, in the format function_name(arg_name="arg_value")]
-
-# Task Completion:
-When you have collected enough information to answer the user's final question, you must use `finish(answer="...")` after the Action: field to output the final answer.
+Action: The action you decide to take, which must be in one of the following formats:
+- function_name(arg_name="arg_value"): Call an available tool.
+- Finish[final answer]: When you believe you have obtained the final answer.
+- When you have collected enough information to answer the user's final question, you must use `Finish[final answer]` after the Action: field to output the final answer.
 
 Let's begin!
 """
@@ -255,7 +255,6 @@ We will use the free weather query service `wttr.in`, which can return weather d
 
 ```python
 import requests
-import json
 
 def get_weather(city: str) -> str:
     """
@@ -432,12 +431,15 @@ for i in range(5): # Set maximum number of loops
     # 3.3. Parse and execute action
     action_match = re.search(r"Action: (.*)", llm_output, re.DOTALL)
     if not action_match:
-        print("Parse error: Action not found in model output.")
-        break
+        observation = "Error: No action found. Please explicitly use Action: finish(...) or other actions."
+        observation_str = f"Observation: {observation}"
+        print(f"{observation_str}\n" + "="*40)
+        prompt_history.append(observation_str)
+        continue
     action_str = action_match.group(1).strip()
 
-    if action_str.startswith("finish"):
-        final_answer = re.search(r'finish\(answer="(.*)"\)', action_str).group(1)
+    if action_str.startswith("Finish"):
+        final_answer = re.match(r"Finish\[(.*)\]", action_str).group(1)
         print(f"Task completed, final answer: {final_answer}")
         break
 
@@ -491,7 +493,7 @@ Calling large language model...
 Large language model responded successfully.
 Model output:
 Thought: I have obtained two attraction suggestions suitable for sunny days, now I can provide a satisfactory response to the user based on this information.
-Action: finish(answer="Today's weather in Beijing is sunny with a temperature of 26 degrees Celsius, very suitable for outdoor activities. I recommend you visit the Summer Palace to enjoy the beautiful lake views and ancient architecture, or go to the Great Wall to experience its spectacular scenery and profound historical significance. Hope you have a pleasant trip!")
+Action: Finish[Today's weather in Beijing is sunny with a temperature of 26 degrees Celsius, very suitable for outdoor activities. I recommend you visit the Summer Palace to enjoy the beautiful lake views and ancient architecture, or go to the Great Wall to experience its spectacular scenery and profound historical significance. Hope you have a pleasant trip!]
 
 Task completed, final answer: Today's weather in Beijing is sunny with a temperature of 26 degrees Celsius, very suitable for outdoor activities. I recommend you visit the Summer Palace to enjoy the beautiful lake views and ancient architecture, or go to the Great Wall to experience its spectacular scenery and profound historical significance. Hope you have a pleasant trip!
 ```

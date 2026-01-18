@@ -1305,6 +1305,7 @@ First, let's create an Agent server:
 ```python
 from hello_agents.protocols import A2AServer
 import threading
+import time
 
 # Create researcher Agent service
 researcher = A2AServer(

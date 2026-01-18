@@ -32,7 +32,7 @@ To make our code more universal, we will uniformly configure model service-relat
 
 1. In your project root directory, create a file named `.env`.
 2. In this file, add the following content. You can point it to OpenAI's official service or any local/third-party service compatible with the OpenAI interface according to your needs.
-3. If you really don't know how to obtain it, you can refer to Section [1.2 API Setup](https://datawhalechina.github.io/handy-multi-agent/#/chapter1/1.2.api-setup) in another Datawhale tutorial.
+3. If you really don't know how to obtain it, you can refer to Section [1.2 API 设置](https://datawhalechina.github.io/handy-multi-agent/#/./chapter1/1-Basic-Configuration?id=_12-api-settings) in another Datawhale tutorial.
 
 ```bash
 # .env file
@@ -366,7 +366,7 @@ Thought: Your thinking process, used to analyze problems, decompose tasks, and p
 Action: The action you decide to take, must be in one of the following formats:
 - {{tool_name}}[{{tool_input}}]`: Call an available tool.
 - `Finish[final answer]`: When you believe you have obtained the final answer.
-- When you have collected enough information to answer the user's final question, you must use `finish(answer="...")` after the Action: field to output the final answer.
+- When you have collected enough information to answer the user's final question, you must use `Finish[final answer]` after the Action: field to output the final answer.
 
 Now, please start solving the following problem:
 Question: {question}

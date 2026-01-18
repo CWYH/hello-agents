@@ -15,7 +15,7 @@ Thought: 你的思考过程，用于分析问题、拆解任务和规划下一�
 Action: 你决定采取的行动，必须是以下格式之一：
 - `{{tool_name}}[{{tool_input}}]`：调用一个可用工具。
 - `Finish[最终答案]`：当你认为已经获得最终答案时。
-- 当你收集到足够的信息，能够回答用户的最终问题时，你必须在`Action:`字段后使用 `finish(answer="...")` 来输出最终答案。
+- 当你收集到足够的信息，能够回答用户的最终问题时，你必须在`Action:`字段后使用 `Finish[最终答案]` 来输出最终答案。
 
 
 现在，请开始解决以下问题：
@@ -52,6 +52,7 @@ class ReActAgent:
             if not action: print("警告：未能解析出有效的Action，流程终止。"); break
             
             if action.startswith("Finish"):
+                # 如果是Finish指令，提取最终答案并结束
                 final_answer = self._parse_action_input(action)
                 print(f"🎉 最终答案: {final_answer}")
                 return final_answer
